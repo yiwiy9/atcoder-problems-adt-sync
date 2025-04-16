@@ -1,0 +1,1 @@
+pub const REACT_RERENDER_WAIT_MS: u32 = 3_000;

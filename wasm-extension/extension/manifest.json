@@ -1,0 +1,36 @@
+{
+    "manifest_version": 3,
+    "name": "AtCoder Problems ADT Sync",
+    "version": "1.0",
+    "description": "Merge AC submissions from AtCoder Daily Training (ADT) into AtCoder Problems for unified visualization.",
+    "background": {
+        "service_worker": "background.js",
+        "type": "module"
+    },
+    "content_scripts": [
+        {
+            "js": [
+                "content.js"
+            ],
+            "matches": [
+                "https://kenkoooo.com/atcoder/*"
+            ]
+        }
+    ],
+    "permissions": [
+        "storage"
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "pkg/*"
+            ],
+            "matches": [
+                "https://kenkoooo.com/*"
+            ]
+        }
+    ],
+    "content_security_policy": {
+        "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+    }
+}
