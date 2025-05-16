@@ -1,0 +1,16 @@
+[package]
+name = "atcoder_problems_adt_sync_api"
+description = "Backend API for AtCoder Problems ADT Sync"
+version = "0.1.0"
+edition = "2024"
+publish = false
+authors = ["yiwiy9"]
+
+[dependencies]
+axum = "0.8"
+lambda_http = "0.14"
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1", features = ["macros"] }
+tower-http = { version = "0.6", features = ["cors"] }
+
+ddb_client = { path = "../ddb_client" }
