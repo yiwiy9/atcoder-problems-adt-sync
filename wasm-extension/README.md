@@ -8,6 +8,11 @@ Chrome Extension to merge AC submissions from AtCoder Daily Training (ADT) into 
 wasm-pack build --target web --out-dir ./extension/pkg
 ```
 
+> **Note:**  
+> Environment variables can be configured in `.env.frontend`.  
+> These values are embedded at build time and should not contain secrets.  
+> See `.env.frontend.example` for reference.
+
 ## Load Extension in Chrome
 
 1. Open `chrome://extensions/` in Chrome  

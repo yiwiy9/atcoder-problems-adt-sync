@@ -1,4 +1,4 @@
-import init, { run_background } from "./pkg/wasm_extension.js";
+import init, { run_background } from "./pkg/atcoder_problems_adt_sync.js";
 
 (async () => {
     try {
