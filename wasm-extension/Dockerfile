@@ -1,4 +1,4 @@
-FROM rust:1.86-bookworm
+FROM rust:1.87-bookworm
 
 RUN apt-get update && \
     apt-get clean && \

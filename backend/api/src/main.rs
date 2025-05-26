@@ -23,7 +23,7 @@ async fn main() -> Result<(), Error> {
     // Load DynamoDB table name and initialize service
     let table_name = env::var(DYNAMODB_TABLE_ENV)
         .unwrap_or_else(|_| panic!("Environment variable {} is not set", DYNAMODB_TABLE_ENV));
-    let ddb_service = DdbService::new(table_name).await;
+    let ddb_service = DdbService::from_env(table_name).await;
 
     // Set up CORS layer
     let extension_origin = env::var(EXTENSION_ORIGIN_ENV)
