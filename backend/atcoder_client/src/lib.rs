@@ -6,3 +6,4 @@ mod scraper;
 
 pub use client::AtCoderClient;
 pub use error::AtCoderClientError;
+pub use models::{Contest, Submission};

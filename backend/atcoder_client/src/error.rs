@@ -29,3 +29,9 @@ pub enum AtCoderClientError {
     #[error("Failed to parse HTML content")]
     HtmlParseError,
 }
+
+impl AtCoderClientError {
+    pub fn is_empty_content(&self) -> bool {
+        matches!(self, Self::NotFound | Self::EmptyContents)
+    }
+}

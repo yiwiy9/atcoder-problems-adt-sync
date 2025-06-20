@@ -1,0 +1,15 @@
+[package]
+name = "atcoder_problems_adt_sync_batch"
+description = "Batch job for AtCoder Problems ADT Sync"
+version = "0.1.0"
+edition = "2024"
+publish = false
+authors = ["yiwiy9"]
+
+[dependencies]
+env_logger = "0.11"
+log = "0.4"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "time"] }
+
+atcoder_client = { path = "../atcoder_client" }
+ddb_client = { path = "../ddb_client" }
