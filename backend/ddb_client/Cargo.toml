@@ -9,5 +9,6 @@ authors = ["yiwiy9"]
 aws-config = { version = "1.1.7", features = ["behavior-version-latest"] }
 aws-sdk-dynamodb = "1.72.0"
 thiserror = "2.0"
+tokio = { version = "1", features = ["time"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_dynamo = { version = "4", features = ["aws-sdk-dynamodb+1"] }

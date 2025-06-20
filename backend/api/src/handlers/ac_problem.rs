@@ -8,7 +8,6 @@ use axum::{
 use ddb_client::{DdbError, DdbService};
 use lambda_http::tracing;
 use serde::Serialize;
-use std::error::Error;
 
 #[derive(Debug, Serialize)]
 struct Response {
@@ -26,24 +25,14 @@ pub async fn get_ac_problems(
 
     let ac_problems = match ddb_service.get_user_ac_problems(&user_id).await {
         Ok(record) => record.ac_problems,
-        Err(err) => match err {
-            DdbError::NotFound => {
-                tracing::warn!("User ID {} not found", user_id);
-                Vec::new()
-            }
-            DdbError::AwsSdkError(dynamo_err) => {
-                if let Some(source) = dynamo_err.source() {
-                    tracing::error!("DynamoDB error: {}", source);
-                } else {
-                    tracing::error!("DynamoDB error occurred but no source available");
-                }
-                return Err(ErrorResponse::internal());
-            }
-            other => {
-                tracing::error!("Unexpected error: {:?}", other);
-                return Err(ErrorResponse::internal());
-            }
-        },
+        Err(DdbError::NotFound) => {
+            tracing::warn!("User ID {} not found", user_id);
+            Vec::new()
+        }
+        Err(err) => {
+            tracing::error!("Failed to fetch user AC problems: {}", err);
+            return Err(ErrorResponse::internal());
+        }
     };
 
     tracing::info!(

@@ -19,7 +19,7 @@ pub async fn get_user_ac_problems(
     let item = result.item.ok_or(DdbError::NotFound)?;
 
     let record =
-        serde_dynamo::from_item(item).map_err(|e| DdbError::DeserializationError(e.to_string()))?;
+        serde_dynamo::from_item(item).map_err(|e| DdbError::SerdeConversionError(e.to_string()))?;
 
     Ok(record)
 }
