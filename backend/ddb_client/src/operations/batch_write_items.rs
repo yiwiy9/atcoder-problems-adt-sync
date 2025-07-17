@@ -1,17 +1,17 @@
+use crate::constants::{BASE_BACKOFF_MILLIS, MAX_BATCH_WRITE, MAX_RETRIES};
 use crate::error::DdbError;
-use crate::models::ContestWriteInput;
+use crate::models::traits::ToWriteRequest;
 use aws_sdk_dynamodb::Client;
 use std::collections::HashMap;
 use tokio::time::{Duration, sleep};
 
-use crate::constants::{BASE_BACKOFF_MILLIS, MAX_BATCH_WRITE, MAX_RETRIES};
-
-/// Write multiple contest records to DynamoDB using BatchWriteItem.
-/// Items are written in batches of 25, with retries using exponential backoff on failure.
-pub async fn batch_write_contests(
+/// Write multiple items to DynamoDB using BatchWriteItem.
+/// Items must implement the `ToWriteRequest` trait.
+/// Writes in batches of 25 with retries using exponential backoff.
+pub async fn batch_write_items<T: ToWriteRequest>(
     client: &Client,
     table_name: &str,
-    items: Vec<ContestWriteInput>,
+    items: Vec<T>,
 ) -> Result<(), DdbError> {
     let mut start = 0;
 
@@ -20,8 +20,8 @@ pub async fn batch_write_contests(
         let batch = &items[start..end];
 
         let mut write_requests = Vec::with_capacity(batch.len());
-        for input in batch {
-            let write_req = input.clone().into_write_request()?;
+        for item in batch {
+            let write_req = item.to_write_request()?;
             write_requests.push(write_req);
         }
 
@@ -38,19 +38,22 @@ pub async fn batch_write_contests(
                 .send()
                 .await?;
 
+            // Break if all items were processed successfully
             if response.unprocessed_items().is_none_or(|m| m.is_empty()) {
                 break;
             }
 
-            // If unprocessed items remain, retry them
+            // Retry if unprocessed items remain
             if retries >= MAX_RETRIES {
                 return Err(DdbError::UnprocessedItemsExceeded);
             }
 
             request_items = response.unprocessed_items().unwrap().clone();
             retries += 1;
+
+            // Apply exponential backoff before retrying
             sleep(Duration::from_millis(backoff)).await;
-            backoff *= 2; // exponential backoff
+            backoff *= 2;
         }
 
         start = end;

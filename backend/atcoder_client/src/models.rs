@@ -20,3 +20,8 @@ pub struct Submission {
     pub result: String,
     pub execution_time: Option<u64>,
 }
+impl Submission {
+    pub fn is_accepted(&self) -> bool {
+        self.result == "AC"
+    }
+}

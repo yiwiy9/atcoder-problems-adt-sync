@@ -1,5 +1,8 @@
 use crate::error::DdbError;
-use crate::models::{PK_FIELD, SK_FIELD, UserAcProblemRecord};
+use crate::models::{
+    UserAcProblemRecord,
+    constants::{PK_FIELD, SK_FIELD},
+};
 use aws_sdk_dynamodb::Client;
 
 /// Retrieve the AC problems for a user from DynamoDB.
@@ -18,8 +21,7 @@ pub async fn get_user_ac_problems(
 
     let item = result.item.ok_or(DdbError::NotFound)?;
 
-    let record =
-        serde_dynamo::from_item(item).map_err(|e| DdbError::SerdeConversionError(e.to_string()))?;
+    let record = serde_dynamo::from_item(item)?;
 
     Ok(record)
 }

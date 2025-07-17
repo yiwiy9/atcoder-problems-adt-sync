@@ -9,6 +9,10 @@ pub enum AtCoderClientError {
     #[error("Session is invalid or expired (HTTP 401 or redirect)")]
     InvalidSession,
 
+    /// Access to the page is forbidden (HTTP 403).
+    #[error("Access forbidden (HTTP 403)")]
+    Forbidden,
+
     /// The requested page was not found (HTTP 404).
     #[error("Requested page does not exist (HTTP 404)")]
     NotFound,
@@ -33,5 +37,9 @@ pub enum AtCoderClientError {
 impl AtCoderClientError {
     pub fn is_empty_content(&self) -> bool {
         matches!(self, Self::NotFound | Self::EmptyContents)
+    }
+
+    pub fn is_retryable(&self) -> bool {
+        matches!(self, Self::Forbidden)
     }
 }

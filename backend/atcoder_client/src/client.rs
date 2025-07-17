@@ -70,6 +70,7 @@ impl AtCoderClient {
             return Err(match status {
                 // Redirects (e.g., to /login) indicate an invalid or expired session
                 StatusCode::FOUND | StatusCode::UNAUTHORIZED => AtCoderClientError::InvalidSession,
+                StatusCode::FORBIDDEN => AtCoderClientError::Forbidden,
                 StatusCode::NOT_FOUND => AtCoderClientError::NotFound,
                 status if status.is_server_error() => AtCoderClientError::ServerError(status),
                 _ => AtCoderClientError::UnexpectedHttpStatus(status),

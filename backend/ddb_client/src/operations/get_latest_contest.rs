@@ -1,5 +1,5 @@
 use crate::error::DdbError;
-use crate::models::{AdtContestRecord, PK_FIELD};
+use crate::models::{AdtContestRecord, constants::PK_FIELD};
 use aws_sdk_dynamodb::Client;
 
 /// Retrieve the most recent contest from DynamoDB
@@ -25,8 +25,7 @@ pub async fn get_latest_contest(
     }
 
     let item = items[0].clone();
-    let record =
-        serde_dynamo::from_item(item).map_err(|e| DdbError::SerdeConversionError(e.to_string()))?;
+    let record = serde_dynamo::from_item(item)?;
 
     Ok(record)
 }

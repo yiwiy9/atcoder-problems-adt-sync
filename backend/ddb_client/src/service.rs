@@ -1,7 +1,8 @@
 use crate::error::DdbError;
-use crate::models::{AdtContestRecord, ContestWriteInput, UserAcProblemRecord};
+use crate::models::{AdtContestRecord, UserAcProblemRecord, traits::ToWriteRequest};
 use crate::operations;
 use aws_sdk_dynamodb::Client;
+use std::collections::HashMap;
 
 /// Service for interacting with DynamoDB for AtCoder Problems ADT Sync.
 #[derive(Clone)]
@@ -29,16 +30,32 @@ impl DdbService {
         operations::get_user_ac_problems(&self.client, &self.table_name, user_id).await
     }
 
+    /// Retrieve multiple users' AC problems using BatchGetItem.
+    pub async fn batch_get_user_ac_problems(
+        &self,
+        user_ids: Vec<String>,
+    ) -> Result<HashMap<String, UserAcProblemRecord>, DdbError> {
+        operations::batch_get_user_ac_problems(&self.client, &self.table_name, user_ids).await
+    }
+
     /// Retrieve the most recent contest from DynamoDB.
     pub async fn get_latest_contest(&self) -> Result<AdtContestRecord, DdbError> {
         operations::get_latest_contest(&self.client, &self.table_name).await
     }
 
-    /// Write multiple contest records to DynamoDB.
-    pub async fn batch_write_contests(
+    /// Retrieve all ADT contests (optionally limited by max count).
+    pub async fn get_all_contests(
         &self,
-        inputs: Vec<ContestWriteInput>,
+        max_items: Option<usize>,
+    ) -> Result<Vec<AdtContestRecord>, DdbError> {
+        operations::get_all_contests(&self.client, &self.table_name, max_items).await
+    }
+
+    /// Write multiple items to DynamoDB using BatchWriteItem.
+    pub async fn batch_write_items<T: ToWriteRequest>(
+        &self,
+        items: Vec<T>,
     ) -> Result<(), DdbError> {
-        operations::batch_write_contests(&self.client, &self.table_name, inputs).await
+        operations::batch_write_items(&self.client, &self.table_name, items).await
     }
 }

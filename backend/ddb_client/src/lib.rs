@@ -5,5 +5,5 @@ mod operations;
 mod service;
 
 pub use error::DdbError;
-pub use models::ContestWriteInput;
+pub use models::{AdtContestRecord, UserAcProblemRecord};
 pub use service::DdbService;

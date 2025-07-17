@@ -1,8 +1,9 @@
 use atcoder_problems_adt_sync_batch::{
     client::{init_atcoder_client, init_ddb_service},
     crawler::ContestCrawler,
+    dto::AdtContestDto,
 };
-use ddb_client::{ContestWriteInput, DdbError};
+use ddb_client::DdbError;
 
 /// Main function to crawl AtCoder contests and write them to DynamoDB.
 /// Skips already stored contests using the latest contest ID.
@@ -64,20 +65,18 @@ async fn main() {
     };
     contests.sort_by_key(|c| c.start_epoch_second);
 
-    // Convert contests to ContestWriteInput format
-    let contest_write_inputs = contests
+    let contest_write_records = AdtContestDto::from_new_contests(contests)
         .into_iter()
-        .map(|c| ContestWriteInput {
-            start_epoch_second: c.start_epoch_second,
-            contest_id: c.id,
-            last_fetched_submission_id: None, // Assuming we don't have this info yet
-        })
+        .map(|dto| dto.into_record())
         .collect::<Vec<_>>();
 
-    log::info!("Total contests to write: {}", contest_write_inputs.len());
+    log::info!(
+        "Total contests to write: {} records",
+        contest_write_records.len()
+    );
 
     // Write contests to DynamoDB
-    if let Err(err) = ddb_service.batch_write_contests(contest_write_inputs).await {
+    if let Err(err) = ddb_service.batch_write_items(contest_write_records).await {
         log::error!("Failed to write contests to DynamoDB: {}", err);
         return;
     }
