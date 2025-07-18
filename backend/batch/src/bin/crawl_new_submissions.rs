@@ -108,6 +108,7 @@ async fn main() {
                 sync_user_ac_problems_from_submissions(&ddb_service, new_ac_submissions).await
             {
                 log::error!("Failed to write submissions to DynamoDB: {}", e);
+                return;
             } else {
                 log::info!("Successfully wrote submissions to DynamoDB.");
             }
@@ -128,6 +129,7 @@ async fn main() {
             sync_user_ac_problems_from_submissions(&ddb_service, new_ac_submissions).await
         {
             log::error!("Failed to write remaining submissions to DynamoDB: {}", e);
+            return;
         } else {
             log::info!("Successfully wrote remaining submissions to DynamoDB.");
         }
@@ -142,6 +144,7 @@ async fn main() {
 
         if let Err(e) = ddb_service.batch_write_items(update_contests).await {
             log::error!("Failed to update contest records in DynamoDB: {}", e);
+            return;
         } else {
             log::info!("Successfully updated contest records in DynamoDB.");
         }
