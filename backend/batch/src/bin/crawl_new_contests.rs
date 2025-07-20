@@ -3,7 +3,6 @@ use atcoder_problems_adt_sync_batch::{
     crawler::ContestCrawler,
     dto::AdtContestDto,
 };
-use ddb_client::DdbError;
 
 /// Main function to crawl AtCoder contests and write them to DynamoDB.
 /// Skips already stored contests using the latest contest ID.
@@ -37,12 +36,13 @@ async fn main() {
     };
 
     // Fetch the latest contest ID from DynamoDB
-    let last_fetched_contest_id = match ddb_service.get_latest_contest().await {
-        Ok(record) => {
-            log::info!("Successfully fetched latest contest: {}", record.contest_id);
-            Some(record.contest_id)
+    let last_fetched_contest_id = match ddb_service.get_contests(Some(1)).await {
+        Ok(records) if !records.is_empty() => {
+            let latest = &records[0];
+            log::info!("Successfully fetched latest contest: {}", latest.contest_id);
+            Some(latest.contest_id.clone())
         }
-        Err(DdbError::NotFound) => {
+        Ok(_) => {
             log::warn!("No contests found in DynamoDB, starting from scratch");
             None
         }

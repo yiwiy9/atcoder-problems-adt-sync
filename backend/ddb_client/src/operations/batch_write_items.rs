@@ -32,23 +32,35 @@ pub async fn batch_write_items<T: ToWriteRequest>(
         let mut backoff = BASE_BACKOFF_MILLIS;
 
         loop {
-            let response = client
+            let result = client
                 .batch_write_item()
                 .set_request_items(Some(request_items.clone()))
                 .send()
-                .await?;
+                .await;
 
-            // Break if all items were processed successfully
-            if response.unprocessed_items().is_none_or(|m| m.is_empty()) {
-                break;
+            match result {
+                Ok(response) => {
+                    // Break if all items were processed successfully
+                    if response.unprocessed_items().is_none_or(|m| m.is_empty()) {
+                        break;
+                    }
+
+                    // Retry if unprocessed items remain
+                    if retries >= MAX_RETRIES {
+                        return Err(DdbError::UnprocessedItemsExceeded);
+                    }
+
+                    request_items = response.unprocessed_items().unwrap().clone();
+                }
+                Err(err) => {
+                    let ddb_err = DdbError::from(err);
+                    // Retry on ProvisionedThroughputExceededException
+                    if !ddb_err.is_throughput_exceeded() || retries >= MAX_RETRIES {
+                        return Err(ddb_err);
+                    }
+                }
             }
 
-            // Retry if unprocessed items remain
-            if retries >= MAX_RETRIES {
-                return Err(DdbError::UnprocessedItemsExceeded);
-            }
-
-            request_items = response.unprocessed_items().unwrap().clone();
             retries += 1;
 
             // Apply exponential backoff before retrying

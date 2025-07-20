@@ -12,7 +12,7 @@ pub struct AdtContestDto {
 impl AdtContestDto {
     /// Converts this DTO into an AdtContestRecord for DynamoDB storage.
     pub fn into_record(self) -> AdtContestRecord {
-        let pk = AdtContestRecord::pk_attr()
+        let pk = AdtContestRecord::pk_attr_from_epoch(self.start_epoch_second)
             .as_s()
             .expect("PK must be a string")
             .to_owned();

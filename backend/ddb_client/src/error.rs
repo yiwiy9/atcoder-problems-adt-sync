@@ -25,6 +25,13 @@ pub enum DdbError {
     UnprocessedItemsExceeded,
 }
 
+impl DdbError {
+    /// Check if the error is a ProvisionedThroughputExceededException.
+    pub fn is_throughput_exceeded(&self) -> bool {
+        self.to_string().contains("ProvisionedThroughputExceeded")
+    }
+}
+
 // === AWS SDK error conversions ===
 type GetItemError =
     aws_sdk_dynamodb::error::SdkError<aws_sdk_dynamodb::operation::get_item::GetItemError>;

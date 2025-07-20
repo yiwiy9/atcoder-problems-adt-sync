@@ -37,7 +37,7 @@ async fn main() {
     };
 
     // Fetch all contests from DynamoDB
-    let contest_records = match ddb_service.get_all_contests(None).await {
+    let contest_records = match ddb_service.get_contests(None).await {
         Ok(records) => {
             log::info!(
                 "Successfully fetched all contests from DynamoDB: {} records",

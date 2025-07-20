@@ -38,17 +38,12 @@ impl DdbService {
         operations::batch_get_user_ac_problems(&self.client, &self.table_name, user_ids).await
     }
 
-    /// Retrieve the most recent contest from DynamoDB.
-    pub async fn get_latest_contest(&self) -> Result<AdtContestRecord, DdbError> {
-        operations::get_latest_contest(&self.client, &self.table_name).await
-    }
-
-    /// Retrieve all ADT contests (optionally limited by max count).
-    pub async fn get_all_contests(
+    /// Retrieve ADT contests (optionally limited by max count).
+    pub async fn get_contests(
         &self,
         max_items: Option<usize>,
     ) -> Result<Vec<AdtContestRecord>, DdbError> {
-        operations::get_all_contests(&self.client, &self.table_name, max_items).await
+        operations::get_contests(&self.client, &self.table_name, max_items).await
     }
 
     /// Write multiple items to DynamoDB using BatchWriteItem.
