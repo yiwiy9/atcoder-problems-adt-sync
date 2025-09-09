@@ -1,17 +1,39 @@
 # AtCoder Problems ADT Sync
 
-A project to integrate AtCoder Daily Training (ADT) AC submissions into [AtCoder Problems](https://kenkoooo.com/atcoder/) for unified visualization.
+A Rust-based Chrome extension and backend system that integrates AtCoder Daily Training (ADT) submissions into [AtCoder Problems](https://kenkoooo.com/atcoder/) for unified problem-solving progress visualization.
 
-## Structure
+## Overview
 
-- [`wasm-extension/`](./wasm-extension): Chrome extension built with Rust and WebAssembly.
-- [`backend/`](./backend): (WIP) Planned backend API for ADT data.
+AtCoder Daily Training (ADT) is a practice contest series on AtCoder using past problems, but its submission data is isolated from AtCoder Problems. This project bridges that gap by automatically synchronizing ADT submission data and displaying it seamlessly within the AtCoder Problems interface.
 
-## Status
+## Architecture
 
-- Frontend development is complete (mock API in use).
-- Backend development is planned (target: AWS Lambda, Rust).
+```bash
+Chrome Extension ──► Backend API ──► DynamoDB
+(Rust + WASM)        (AWS Lambda)      (User AC Data)
+       │                   ▲
+       │                   │
+       ▼                   │
+AtCoder Problems    Batch Processor
+   Website        (AtCoder Scraper)
+```
+
+## Project Structure
+
+- **[`wasm-extension/`](./wasm-extension)**: Chrome extension (Rust + WebAssembly)
+- **[`backend/`](./backend)**: AWS Lambda backend with Rust
+  - `api/`: REST API for Chrome extension
+  - `batch/`: Data crawling and processing
+  - `ddb_client/`: DynamoDB operations library ([📊 Architecture & Cost Analysis](./backend/ddb_client/docs/architecture.md))
+  - `atcoder_client/`: AtCoder web scraping client
+
+## Technology Stack
+
+- **Frontend**: Rust + WebAssembly (wasm-bindgen)
+- **Backend**: Rust + AWS Lambda (Axum)  
+- **Data**: DynamoDB, AtCoder scraping (reqwest, scraper)
+- **Tools**: cargo-lambda, wasm-pack, Docker
 
 ## License
 
-This project is licensed under the MIT License. See [LICENSE](./LICENSE).
+MIT License

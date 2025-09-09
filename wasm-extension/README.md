@@ -29,4 +29,4 @@ This directory supports development using VSCode Dev Containers.
 
 ## License
 
-MIT — © 2025 yiwiy9
+MIT License
