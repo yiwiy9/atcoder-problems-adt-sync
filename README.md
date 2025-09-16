@@ -11,11 +11,11 @@ AtCoder Daily Training (ADT) is a practice contest series on AtCoder using past 
 ```bash
 Chrome Extension ──► Backend API ──► DynamoDB
 (Rust + WASM)        (AWS Lambda)      (User AC Data)
-       │                   ▲
-       │                   │
-       ▼                   │
-AtCoder Problems    Batch Processor
-   Website        (AtCoder Scraper)
+       │                               ▲
+       │                               │
+       ▼                               │
+AtCoder Problems                Batch Processor
+   Website                    (AtCoder Scraper)
 ```
 
 ## Project Structure
