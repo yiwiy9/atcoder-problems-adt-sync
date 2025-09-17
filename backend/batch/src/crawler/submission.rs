@@ -49,18 +49,18 @@ impl SubmissionCrawler {
         contest_id: &str,
         until_submission_id: Option<u64>,
     ) -> Result<Vec<Submission>, AtCoderClientError> {
-        log::info!("Starting submission crawl");
+        log::debug!("Starting submission crawl");
         if let Some(id) = until_submission_id {
-            log::info!("Crawling until submission ID: {}", id);
+            log::debug!("Crawling until submission ID: {}", id);
         } else {
-            log::info!("Crawling all submissions until the end of submissions");
+            log::debug!("Crawling all submissions until the end of submissions");
         }
 
         let mut all_submissions = Vec::new();
         let mut page = 1;
 
         'outer: loop {
-            log::info!("Fetching submission page {}", page);
+            log::debug!("Fetching submission page {}", page);
             let submissions = match self.fetch_submissions_with_retry(contest_id, page).await {
                 Ok(s) => s,
                 Err(e) => {
@@ -88,7 +88,7 @@ impl SubmissionCrawler {
                 break;
             }
 
-            log::info!(
+            log::debug!(
                 "Fetched {} submissions for contest {} on page {}",
                 submissions.len(),
                 contest_id,
@@ -109,7 +109,7 @@ impl SubmissionCrawler {
             sleep(Duration::from_millis(ATCODER_CRAWL_SLEEP_MILLIS)).await;
         }
 
-        log::info!(
+        log::debug!(
             "Crawling completed, total submissions for contest {} fetched: {}",
             contest_id,
             all_submissions.len()

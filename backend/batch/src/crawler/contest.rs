@@ -18,18 +18,18 @@ impl ContestCrawler {
         &self,
         until_contest_id: Option<&str>,
     ) -> Result<Vec<Contest>, AtCoderClientError> {
-        log::info!("Starting contest crawl");
+        log::debug!("Starting contest crawl");
         if let Some(id) = until_contest_id {
-            log::info!("Crawling until contest ID: {}", id);
+            log::debug!("Crawling until contest ID: {}", id);
         } else {
-            log::info!("Crawling all contests until the end of archive");
+            log::debug!("Crawling all contests until the end of archive");
         }
 
         let mut all_contests = Vec::new();
         let mut page = 1;
 
         'outer: loop {
-            log::info!("Fetching contest archive page {}", page);
+            log::debug!("Fetching contest archive page {}", page);
             let contests = match self.client.fetch_adt_contests(page).await {
                 Ok(c) => c,
                 Err(e) => {
@@ -48,7 +48,7 @@ impl ContestCrawler {
                 break;
             }
 
-            log::info!("Fetched {} contests from page {}", contests.len(), page);
+            log::debug!("Fetched {} contests from page {}", contests.len(), page);
 
             for contest in contests {
                 if let Some(stop_id) = until_contest_id {
@@ -64,7 +64,7 @@ impl ContestCrawler {
             sleep(Duration::from_millis(ATCODER_CRAWL_SLEEP_MILLIS)).await;
         }
 
-        log::info!(
+        log::debug!(
             "Crawling completed, total contests fetched: {}",
             all_contests.len()
         );
