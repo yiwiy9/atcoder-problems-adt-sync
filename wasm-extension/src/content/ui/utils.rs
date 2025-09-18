@@ -57,7 +57,7 @@ pub fn spawn_sync_from_url() {
                 // Delay to let React rerender first
                 Timeout::new(REACT_RERENDER_WAIT_MS, move || {
                     if let Err(err) = refresh::trigger_react_refresh() {
-                        log::error(&err);
+                        log::debug(&err);
                     }
                 })
                 .forget();

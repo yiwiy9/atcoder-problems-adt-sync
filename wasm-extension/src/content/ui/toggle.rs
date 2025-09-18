@@ -126,7 +126,7 @@ fn add_toggle_listener(toggle: &web_sys::HtmlInputElement) -> Result<(), JsValue
             }
 
             if let Err(err) = refresh::trigger_react_refresh() {
-                log::error(&err);
+                log::debug(&err);
             }
         });
     }) as Box<dyn Fn(_)>);
