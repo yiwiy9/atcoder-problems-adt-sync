@@ -53,7 +53,7 @@ impl ContestCrawler {
             for contest in contests {
                 if let Some(stop_id) = until_contest_id {
                     if contest.id == stop_id {
-                        log::info!("Reached contest ID {}, stopping.", stop_id);
+                        log::debug!("Reached contest ID {}, stopping.", stop_id);
                         break 'outer;
                     }
                 }

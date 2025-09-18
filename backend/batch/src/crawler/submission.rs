@@ -98,7 +98,7 @@ impl SubmissionCrawler {
             for submission in submissions {
                 if let Some(stop_id) = until_submission_id {
                     if submission.id == stop_id {
-                        log::info!("Reached submission ID {}, stopping.", stop_id);
+                        log::debug!("Reached submission ID {}, stopping.", stop_id);
                         break 'outer;
                     }
                 }

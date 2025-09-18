@@ -56,13 +56,19 @@ async fn main() {
 
     let mut new_ac_submissions = vec![];
     let mut update_contests = vec![];
+    let mut batch_start_contest_id: Option<String> = None;
 
     // Crawl submissions for each contest
-    for record in contest_records {
+    for record in &contest_records {
         // Sleep before processing each contest to maintain consistent intervals
         sleep(Duration::from_millis(ATCODER_CRAWL_SLEEP_MILLIS)).await;
 
-        log::info!("Crawling submissions for contest: {}", record.contest_id);
+        // Record the start of current write batch
+        if batch_start_contest_id.is_none() {
+            batch_start_contest_id = Some(record.contest_id.clone());
+        }
+
+        log::debug!("Crawling submissions for contest: {}", record.contest_id);
 
         // Crawl submissions until the last fetched submission ID
         let contest_ac_submissions = match submission_crawler
@@ -77,7 +83,7 @@ async fn main() {
         };
 
         if contest_ac_submissions.is_empty() {
-            log::info!("No new AC submissions for contest: {}", record.contest_id);
+            log::debug!("No new AC submissions for contest: {}", record.contest_id);
             continue;
         }
 
@@ -99,8 +105,10 @@ async fn main() {
             );
 
             log::info!(
-                "Writing {} AC submissions to DynamoDB.",
-                new_ac_submissions.len()
+                "Writing {} AC submissions (contests {} to {}) to DynamoDB.",
+                new_ac_submissions.len(),
+                batch_start_contest_id.as_ref().unwrap(),
+                record.contest_id
             );
 
             // Write the new AC submissions to DynamoDB
@@ -113,16 +121,19 @@ async fn main() {
                 log::info!("Successfully wrote submissions to DynamoDB.");
             }
 
-            // Clear the in-memory submissions
+            // Clear the in-memory submissions and reset contest range
             new_ac_submissions = vec![];
+            batch_start_contest_id = None;
         }
     }
 
     // Flush remaining AC submissions to DynamoDB
     if !new_ac_submissions.is_empty() {
         log::info!(
-            "Writing remaining {} AC submissions to DynamoDB.",
-            new_ac_submissions.len()
+            "Writing remaining {} AC submissions (contests {} to {}) to DynamoDB.",
+            new_ac_submissions.len(),
+            batch_start_contest_id.as_ref().unwrap(),
+            contest_records.last().map(|c| &c.contest_id).unwrap()
         );
 
         if let Err(e) =
