@@ -6,6 +6,18 @@ A Rust-based Chrome extension and backend system that integrates AtCoder Daily T
 
 AtCoder Daily Training (ADT) is a practice contest series on AtCoder using past problems, but its submission data is isolated from AtCoder Problems. This project bridges that gap by automatically synchronizing ADT submission data and displaying it seamlessly within the AtCoder Problems interface.
 
+## Demo
+
+AtCoder Problems "Table" tab with the extension:
+
+- OFF (default): only native AC submissions are highlighted  
+- ON: ADT submissions are also highlighted in green  
+
+<p align="center">
+  <img src="./docs/images/off.png" width="45%" />
+  <img src="./docs/images/on.png" width="45%" />
+</p>
+
 ## Architecture
 
 ```bash
