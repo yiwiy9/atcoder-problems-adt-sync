@@ -25,11 +25,19 @@ async fn main() -> Result<(), Error> {
         .unwrap_or_else(|_| panic!("Environment variable {} is not set", DYNAMODB_TABLE_ENV));
     let ddb_service = DdbService::from_env(table_name).await;
 
-    // Set up CORS layer
-    let extension_origin = env::var(EXTENSION_ORIGIN_ENV)
+    // Set up CORS layer with multiple origins
+    let extension_origins = env::var(EXTENSION_ORIGIN_ENV)
         .unwrap_or_else(|_| panic!("Environment variable {} is not set", EXTENSION_ORIGIN_ENV));
+
+    let allowed_origins: Vec<HeaderValue> = extension_origins
+        .split(',')
+        .map(|origin| origin.trim())
+        .filter(|origin| !origin.is_empty())
+        .map(|origin| origin.parse::<HeaderValue>().unwrap())
+        .collect();
+
     let cors_layer = CorsLayer::new()
-        .allow_origin(extension_origin.parse::<HeaderValue>().unwrap())
+        .allow_origin(allowed_origins)
         .allow_methods([Method::GET])
         .allow_headers([
             header::CONTENT_TYPE,
