@@ -32,6 +32,8 @@ cd api/
 make watch  # Local development server
 ```
 
+The API will be available at: `http://localhost:9000/lambda-url/atcoder_problems_adt_sync_api/`
+
 ### Deploy API
 
 ```bash
